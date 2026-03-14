@@ -1,7 +1,7 @@
 name: Code-quality
 on:
     push:
-        branches: [ docker ]
+        branches: [ docker , main ]
 jobs:
     code-quality:
         runs-on: ubuntu-latest
