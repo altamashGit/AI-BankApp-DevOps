@@ -2,7 +2,7 @@ name: code-quality.yml
 on:
     push:
         branches:
-            - main
+            - docker
 jobs:
     code-quality:
         runs-on: ubuntu-latest
