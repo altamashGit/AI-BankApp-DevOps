@@ -1,7 +1,7 @@
 name: Tests 
 on:
     workflow_run:
-        workflows: ["code-quality"]
+        workflows: ["Code-quality"]
         types:
           - completed
 jobs:
