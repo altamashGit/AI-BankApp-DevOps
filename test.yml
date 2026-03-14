@@ -1,11 +1,13 @@
 name: Tests 
 on:
     workflow_run:
-        workflows: code-quality
+        workflows:
+          - code-quality
         types:
-            - completed
+          - completed
 jobs:
     tests:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -16,7 +18,9 @@ jobs:
               with:
                   distribution: 'temurin'
                   java-version: '17' 
+            
             - name: Building with Maven
-              run: mmvn clean install -DskipTests
+              run: mvn clean install -DskipTests
+
             - name: Run Tests
               run: mvn test
