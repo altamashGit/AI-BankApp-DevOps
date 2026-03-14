@@ -1,0 +1,22 @@
+name: Tests 
+on:
+    workflow_run:
+        workflows: ["code-quality.yml"]
+        types:
+            - completed
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'temurin'
+                  java-version: '17' 
+            - name: Building with Maven
+              run: mmvn clean install -DskipTests
+            - name: Run Tests
+              run: mvn test
