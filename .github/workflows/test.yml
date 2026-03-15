@@ -33,7 +33,7 @@ jobs:
 
             - name: Run Tests
               run: |
-                mvn clean verify -e -Dsurefire.useFile=false -DtrimStackTrace=false 
+                mvn -B -e test -Dsurefire.useFile=false
             - name: Upload Test Reports
               if: failure()
               uses: actions/upload-artifact@v4
