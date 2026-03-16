@@ -9,6 +9,12 @@ on:
     workflows: ["Code-quality"]
     types:
       - completed
+
+permissions:
+  security-events: write
+  actions: read
+  contents: read
+  
 jobs:
   code-security-analysis:
     runs-on: ubuntu-latest
@@ -28,9 +34,10 @@ jobs:
           languages: java
 
       - name: Build
-        run: mvn clean install
+        run: mvn clean install -DskipTests
 
-      - name: Analyze
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Run CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:java"
