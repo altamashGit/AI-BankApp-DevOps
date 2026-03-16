@@ -63,16 +63,11 @@ jobs:
       - name: Build project with Maven
         run: mvn clean install -DskipTests
 
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: 'BankingApp'
-          path: '.'
-          format: 'HTML'
+      - name: Run Dependency-Check via Maven
+        run: mvn org.owasp:dependency-check-maven:check -Dformat=HTML
 
       - name: Upload Dependency Report
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: reports
+          path: target/dependency-check-report.html
