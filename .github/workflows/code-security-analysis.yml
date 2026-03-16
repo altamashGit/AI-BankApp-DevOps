@@ -60,6 +60,10 @@ jobs:
 
       - name: Build project with Maven
         run: mvn clean install -DskipTests
+        
+      - name: Added JAVA_HOME to env
+        run: echo $JAVA_HOME
+
       - name: Depcheck
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
@@ -67,9 +71,6 @@ jobs:
           project: 'BankingApp'
           path: '.'
           format: 'HTML'
-
-      - name: Added JAVA_HOME to env
-        run: echo $JAVA_HOME
 
       - name: Upload Dependency Report
         uses: actions/upload-artifact@v4
