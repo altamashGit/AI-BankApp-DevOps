@@ -63,8 +63,11 @@ jobs:
       - name: Build project with Maven
         run: mvn clean install -DskipTests
 
-      - name: Run Dependency-Check via Maven
-        run: mvn org.owasp:dependency-check-maven:check -Dformat=HTML
+      - name: Run OWASP Dependency Check
+        run: mvn org.owasp:dependency-check-maven:check \
+          -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
+          -Dformat=HTML \
+          -DfailBuildOnCVSS=7
 
       - name: Upload Dependency Report
         uses: actions/upload-artifact@v4
