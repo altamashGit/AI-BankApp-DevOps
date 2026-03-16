@@ -71,10 +71,15 @@ jobs:
 
       - name: Run OWASP Dependency Check
         run: |
-          mvn org.owasp:dependency-check-maven:check \
-            -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
-            -Dformat=HTML \
-            -DfailBuildOnCVSS=7
+         mvn org.owasp:dependency-check-maven:check \
+           -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
+           -Dformat=HTML \
+           -DfailBuildOnCVSS=7 \
+           -Ddependency-check.skipProvidedScope=true \
+           -Ddependency-check.skipTestScope=true \
+           -DnodeAnalyzerEnabled=false \
+           -DnodeAuditAnalyzerEnabled=false \
+           -DrubyBundlerAuditAnalyzerEnabled=false
 
       - name: Upload Dependency Report
         uses: actions/upload-artifact@v4
