@@ -1,0 +1,31 @@
+name: Docker build and push
+
+on:
+  push:
+    branches: [ docker ]
+  workflow_run:
+    workflows: ["Tests"]
+    types:
+      - completed
+
+jobs:
+  build:
+    env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        Image_TAG: ${{ github.sha }}
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Login to Docker Hub
+          uses: docker/login-action@v4
+          with:
+              username: $DOCKERHUB_USERNAME
+              password: $DOCKERHUB_TOKEN
+
+        - name: Build Docker Image
+          run: |
+            docker build -t $$DOCKERHUB_USERNAME/ai-bannking-app:$Image_TAG .
+        
