@@ -1,42 +1,60 @@
-name: Tests 
+name: Tests
+
 on:
-    push:
-        branches: [ docker ]
-    workflow_run:
-        workflows: ["Code-quality"]
-        types:
-            - completed
+  push:
+    branches: [ docker ]
+  workflow_run:
+    workflows: ["Code-quality"]
+    types:
+      - completed
+
 jobs:
-    tests:
-        if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
-        runs-on: ubuntu-latest
+  tests:
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          OLLAMA_URL: ${{ secrets.OLLAMA_URL }} 
-        
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            
-            - name: Setup Java
-              uses: actions/setup-java@v4
-              with:
-                  distribution: 'temurin'
-                  java-version: '21' 
-            
-            - name: Building with Maven
-              run: mvn clean install -DskipTests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-            - name: Run Tests
-              run: |
-                mvn -B -e test -Dsurefire.useFile=false
-            - name: Upload Test Reports
-              if: failure()
-              uses: actions/upload-artifact@v4
-              with:
-                name: test-reports
-                path: target/surefire-reports/
+    env:
+      MYSQL_HOST: localhost
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      OLLAMA_URL: ${{ secrets.OLLAMA_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build
+        run: mvn clean install -DskipTests
+
+      - name: Run Tests
+        run: mvn -B test -Dsurefire.useFile=false
+
+      - name: Upload Test Reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: target/surefire-reports/
