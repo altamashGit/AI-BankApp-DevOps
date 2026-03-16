@@ -47,7 +47,6 @@ jobs:
 # ============================================================
   
   depchecktest:
-    if : ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     name: dependency-check
     steps:
