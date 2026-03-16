@@ -1,24 +1,44 @@
 name: Code-quality
 on:
     push:
-        branches: [ docker , main ]
+        branches: [docker , main ]
 jobs:
-    code-quality:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            
-            - name: Setup Java
-              uses: actions/setup-java@v4
-              with:
-                  distribution: 'temurin'
-                  java-version: '17' 
-                  
-            - name: Cache mven Dependencies
-              uses: actions/cache@v3
-              with:
-                path: ~/.m2
-                key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-            - name: Run Checkstyle
-              run: mvn checkstyle:checkstyle
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+# ============================================================
+# GATE 1: SECRET SCANNING (Gitleaks)
+# ============================================================
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Gitleaks needs full history to scan all commits
+
+      - name: Run Gitleaks-action
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+# ============================================================
+# GATE 2: CODE QUALITY (Checkstyle)
+# ============================================================
+      - name: Checkout code
+        uses: actions/checkout@v6
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' 
+          
+      - name: Cache maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      - name: Run Checkstyle
+        run: mvn checkstyle:checkstyle
+  
