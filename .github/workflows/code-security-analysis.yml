@@ -60,6 +60,19 @@ jobs:
       - name: Echo java home
         run: echo $JAVA_HOME
 
+      # Added step to verify API key presence
+      
+      - name: Verify API Key
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -z "$NVD_API_KEY" ]; then
+            echo " API key missing"
+            exit 1
+          else
+            echo "API key present"
+          fi
+
       - name: Build project with Maven
         run: mvn clean install -DskipTests
 
@@ -80,9 +93,9 @@ jobs:
         run: |
           mvn org.owasp:dependency-check-maven:check \
             -DfailBuildOnCVSS=7 \
-            -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
-            -DsuppressionFile=suppressions.xml
-
+            -DnvdApiKey=$NVD_API_KEY \
+            -DsuppressionFile=dependency-check-suppressions.xml
+    
       - name: Upload Report
         uses: actions/upload-artifact@v4
         if: always()
