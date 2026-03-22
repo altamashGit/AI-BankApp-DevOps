@@ -64,13 +64,7 @@
 		</dependency>
 		
 		<!-- Removed h2 database cousing security vulnerabilities in git Actions pipeline -->
-		
-		<suppressions xmlns="https://jeremylong.github.io">
-          <suppress>
-             <notes><![CDATA[Legacy CVE causing build failure]]></notes>
-             <cve>CVE-2007-3870</cve>
-          </suppress>
-        </suppressions>
+	
 
 
 
@@ -100,6 +94,12 @@
             <configuration>
                 <trimStackTrace>false</trimStackTrace>
             </configuration>
+			  <suppressions xmlns="https://jeremylong.github.io">
+                <suppress>
+                  <notes><![CDATA[Legacy CVE causing build failure]]></notes>
+                  <cve>CVE-2007-3870</cve>
+                </suppress>
+              </suppressions>
         </plugin>
         <plugin>
             <groupId>org.springframework.boot</groupId>
