@@ -94,9 +94,10 @@ jobs:
           echo ${{ secrets.NVD_API_KEY }}
           mvn org.owasp:dependency-check-maven:check \
             -DfailBuildOnCVSS=7 \
+            -DautoUpdate=false
             -DnvdApiKey=$NVD_API_KEY \
             -DsuppressionFiles=dependency-check-suppressions.xml
-    
+            
       - name: Upload Report
         uses: actions/upload-artifact@v4
         if: always()
