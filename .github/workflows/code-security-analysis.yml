@@ -63,26 +63,28 @@ jobs:
       - name: Build project with Maven
         run: mvn clean install -DskipTests
 
-      - name: Cache OWASP Dependency Check Data
+      - name: Cache Dependency Check DB
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: dependency-check-${{ runner.os }}
+          key: owasp-nvd-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            owasp-nvd-${{ runner.os }}-
 
-      - name: Run OWASP Dependency Check
+      - name: Build project
+        run: mvn -B -DskipTests package
+
+      - name:  Run OWASP Dependency Check
         run: |
-         mvn org.owasp:dependency-check-maven:check \
-           -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
-           -Dformat=HTML \
-           -DfailBuildOnCVSS=7 \
-           -Ddependency-check.skipProvidedScope=true \
-           -Ddependency-check.skipTestScope=true \
-           -DnodeAnalyzerEnabled=false \
-           -DnodeAuditAnalyzerEnabled=false \
-           -DrubyBundlerAuditAnalyzerEnabled=false
+          mvn org.owasp:dependency-check-maven:check \
+          -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+          -DfailBuildOnCVSS=7 \
+          -DsuppressionFile=suppression.xml \
+          -DautoUpdate=false
 
-      - name: Upload Dependency Report
+      - name: Upload Report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: dependency-check-report
           path: target/dependency-check-report.html
