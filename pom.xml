@@ -88,19 +88,28 @@
 	<build>
 		<plugins>
         <plugin>
+		    <!-- OWASP Dependency Check (CORRECT PLACE) -->
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>9.0.0</version>
+            <configuration>
+                <suppressionFiles>
+                    <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+                </suppressionFiles>
+            </configuration>
+        </plugin>
+
+		<!--  Test plugin -->
+        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <!-- No version needed; inherited from spring-boot-starter-parent -->
             <configuration>
                 <trimStackTrace>false</trimStackTrace>
             </configuration>
-			  <suppressions xmlns="https://jeremylong.github.io">
-                <suppress>
-                  <notes><![CDATA[Legacy CVE causing build failure]]></notes>
-                  <cve>CVE-2007-3870</cve>
-                </suppress>
-              </suppressions>
         </plugin>
+		
+		<!--  Spring Boot -->
         <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
