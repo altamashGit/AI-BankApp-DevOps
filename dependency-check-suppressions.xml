@@ -1,0 +1,10 @@
+<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>9.0.0</version>
+    <configuration>
+        <suppressionFiles>
+            <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+        </suppressionFiles>
+    </configuration>
+</plugin>
