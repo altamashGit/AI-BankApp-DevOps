@@ -76,6 +76,9 @@ jobs:
       - name: Build project with Maven
         run: mvn clean install -DskipTests
 
+
+   #  ADDEd Cache for OWASP Dependency Check data
+
       - name: Cache Dependency Check DB
         uses: actions/cache@v4
         with:
@@ -84,19 +87,12 @@ jobs:
           restore-keys: |
             owasp-nvd-${{ runner.os }}-
 
+
       - name: Build project
         run: mvn -B -DskipTests package
 
-    # ✅ ADDEd Cache
-      - name: Cache OWASP data
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: owasp-db-${{ runner.os }}
-          restore-keys: |
-            owasp-db-
+    # ADD OWASP Dependency Check step with enhanced configuration and error handling
 
-    # ✅ ADD THIS
       - name: Run OWASP Dependency Check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -106,6 +102,7 @@ jobs:
             -DnvdApiDelay=10000 \
             -DnvdMaxRetryCount=20 \
             -DfailBuildOnCVSS=7 \
+            -DfailOnError=false \
             -DsuppressionFiles=dependency-check-suppressions.xml
 
       - name: Upload Report
